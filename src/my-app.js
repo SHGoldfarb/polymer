@@ -27,13 +27,25 @@ class MyApp extends PolymerElement {
     this.incomes = [1200, 3000];
     this.expenses = [2000];
     this.total = 0;
+    this.totalColor = 'black';
   }
 
   static get template() {
     return html`
+      <style>
+        :host {
+          display: flex;
+        }
+      </style>
       <transactions-container id="incomes" color="blue" data={{incomes}}></transactions-container>
       <transactions-container id="expenses" color="red" data={{expenses}}></transactions-container>
-      <div>{{total}}</div>
+      <number-card 
+        number="{{total}}"
+        style="
+          width: 100px;
+          display: block;"
+        color="{{totalColor}}"
+      ></number-card>
     `;
   }
 
@@ -54,6 +66,7 @@ class MyApp extends PolymerElement {
 
   updateTotal() {
     this.total = this.incomes.reduce((x, y) => x + y) - this.expenses.reduce((x, y) => x + y);
+    this.totalColor = this.total >= 0 ? 'green' : 'red';
   }
 }
 
