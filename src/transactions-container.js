@@ -24,16 +24,6 @@ class TransactionsContainer extends PolymerElement {
         }
     }
 
-    _dataChanged(data) {
-        console.log('SAM', data);
-    }
-
-    static get observers() {
-        return [
-            '_dataChanged(data.*)'
-        ]
-    }
-
     ready() {
         super.ready();
         this.shadowRoot.querySelector('#input').addEventListener('newTransaction', (ev => {
