@@ -19,7 +19,7 @@ class NumberCard extends PolymerElement {
         <div style$="
             color: {{color}};
             text-align: end;
-        ">{{numberString}}</div>
+        ">{{numberString}} <button id="delete">X</button></div>
       `;
     }
 
@@ -32,12 +32,21 @@ class NumberCard extends PolymerElement {
             color: {
                 type: String,
                 value: 'black'
-            }
+            },
+            index: Number
         }
     }
 
     _numberChange(value) {
         this.numberString = toMoneyStrig(value)
+    }
+
+    ready() {
+        super.ready();
+        this.shadowRoot.querySelector('#delete').addEventListener('click', ev => {
+            this.dispatchEvent(new CustomEvent('delete', { detail: { index: this.index } }));
+            console.log('delete', this.index, this.number);
+        })
     }
 }
 

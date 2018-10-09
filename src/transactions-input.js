@@ -1,6 +1,6 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 
-export const dispatchTransaction = (element, value) => {
+const dispatchTransaction = (element, value) => {
     element.dispatchEvent(new CustomEvent(
         'newTransaction', {
             detail: {

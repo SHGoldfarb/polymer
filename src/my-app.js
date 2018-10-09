@@ -26,6 +26,8 @@ class MyApp extends PolymerElement {
     super();
     this.incomes = [1200, 3000];
     this.expenses = [2000];
+    this.indexedIncomes = [];
+    this.indexedExpenses = [];
     this.total = 0;
     this.totalColor = 'black';
   }
@@ -37,8 +39,8 @@ class MyApp extends PolymerElement {
           display: flex;
         }
       </style>
-      <transactions-container id="incomes" color="blue" data={{incomes}}></transactions-container>
-      <transactions-container id="expenses" color="red" data={{expenses}}></transactions-container>
+      <transactions-container id="incomes" color="blue" data={{indexedIncomes}}></transactions-container>
+      <transactions-container id="expenses" color="red" data={{indexedExpenses}}></transactions-container>
       <number-card 
         number="{{total}}"
         style="
@@ -51,22 +53,34 @@ class MyApp extends PolymerElement {
 
   ready() {
     super.ready();
-    this.updateTotal()
-    this.shadowRoot.querySelector('#incomes').addEventListener('newTransaction', (ev => {
+    this.updateTotal();
+    const incomesContainer = this.shadowRoot.querySelector('#incomes');
+    const expensesContainer = this.shadowRoot.querySelector('#expenses');
+    incomesContainer.addEventListener('newTransaction', (ev => {
       const value = parseInt(ev.detail.value);
       this.push('incomes', value);
       this.updateTotal();
     }))
-    this.shadowRoot.querySelector('#expenses').addEventListener('newTransaction', (ev => {
+    incomesContainer.addEventListener('delete', ev => {
+      this.incomes.splice(ev.detail.index, 1);
+      this.updateTotal();
+    });
+    expensesContainer.addEventListener('newTransaction', (ev => {
       const value = parseInt(ev.detail.value);
       this.push('expenses', value);
       this.updateTotal();
     }))
+    expensesContainer.addEventListener('delete', ev => {
+      this.expenses.splice(ev.detail.index, 1);
+      this.updateTotal();
+    });
   }
 
   updateTotal() {
-    this.total = this.incomes.reduce((x, y) => x + y) - this.expenses.reduce((x, y) => x + y);
+    this.total = this.incomes.reduce((x, y) => x + y, 0) - this.expenses.reduce((x, y) => x + y, 0);
     this.totalColor = this.total >= 0 ? 'green' : 'red';
+    this.indexedExpenses = this.expenses.map((number, index) => ({ index, number }));
+    this.indexedIncomes = this.incomes.map((number, index) => ({ index, number }));
   }
 }
 
