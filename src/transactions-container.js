@@ -1,16 +1,17 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { } from '@polymer/polymer/lib/elements/dom-repeat.js';
 import './number-card.js';
-import { propagate } from './utils.js';
+import { propagate, sumArray, toMoneyString } from './utils.js';
 
 class TransactionsContainer extends PolymerElement {
     static get template() {
         return html`
             <style>
                 :host {
-                    margin: 20px;
+                    margin: 0px 20px;
                 }
             </style>
+            <h3 style$="color: {{color}}">{{name}}: {{total}}</h3>
             <transactions-input id="input"></transactions-input>
             <div id="repeater-container">
                 <dom-repeat items="{{data}}">
@@ -34,20 +35,16 @@ class TransactionsContainer extends PolymerElement {
     static get properties() {
         return {
             color: String,
+            name: String,
             data: {
                 type: Array,
-                observer: '_dataChanged'
+                observer: '_dataChange'
             }
         }
     }
 
-    _dataChanged(data) {
-        // console.log('data changed', data);
-        const cards = this.shadowRoot.querySelectorAll('number-card');
-        if (cards) {
-            // console.log(cards);
-            // cards.forEach(node => console.log(node));
-        }
+    _dataChange(data) {
+        this.total = toMoneyString(sumArray(data.map(data => data.number)));
     }
 
     ready() {

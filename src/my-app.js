@@ -1,17 +1,8 @@
-/**
- * @license
- * Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
- */
-
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { setPassiveTouchGestures, setRootPath } from '@polymer/polymer/lib/utils/settings.js';
 import './transactions-container.js'
 import './transactions-input.js'
+import { sumArray } from './utils.js';
 
 // Gesture events like tap and track generated from touch will not be
 // preventable, allowing for better scrolling performance.
@@ -39,15 +30,23 @@ class MyApp extends PolymerElement {
           display: flex;
         }
       </style>
-      <transactions-container id="incomes" color="blue" data={{indexedIncomes}}></transactions-container>
-      <transactions-container id="expenses" color="red" data={{indexedExpenses}}></transactions-container>
-      <number-card 
-        number="{{total}}"
-        style="
-          width: 100px;
-          display: block;"
-        color="{{totalColor}}"
-      ></number-card>
+      <transactions-container name="Ingresos" id="incomes" color="blue" data={{indexedIncomes}}></transactions-container>
+      <transactions-container name="Gastos" id="expenses" color="red" data={{indexedExpenses}}></transactions-container>
+      <div id="totals-container">
+        <h2 style$="color: {{totalColor}}">Total</h2>
+        <number-card 
+          number="{{total}}"
+          style="
+            width: 100px;
+            display: block;
+            margin: 20px;
+            font-size: 30px;
+            font-weight: 50"
+          color="{{totalColor}}"
+          deletable="false"
+        ></number-card>
+      </div>
+      
     `;
   }
 
@@ -77,7 +76,7 @@ class MyApp extends PolymerElement {
   }
 
   updateTotal() {
-    this.total = this.incomes.reduce((x, y) => x + y, 0) - this.expenses.reduce((x, y) => x + y, 0);
+    this.total = sumArray(this.incomes) - sumArray(this.expenses);
     this.totalColor = this.total >= 0 ? 'green' : 'red';
     this.indexedExpenses = this.expenses.map((number, index) => ({ index, number }));
     this.indexedIncomes = this.incomes.map((number, index) => ({ index, number }));

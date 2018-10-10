@@ -1,17 +1,5 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
-
-const toMoneyStrig = number => {
-    let numberString = number.toString();
-    let ret = '';
-    while (numberString) {
-        if (ret) {
-            ret = '.' + ret
-        }
-        ret = numberString.slice(-3) + ret;
-        numberString = numberString.slice(0, -3)
-    }
-    return '$' + ret;
-}
+import { toMoneyString } from './utils.js'
 
 class NumberCard extends PolymerElement {
     static get template() {
@@ -19,7 +7,7 @@ class NumberCard extends PolymerElement {
         <div style$="
             color: {{color}};
             text-align: end;
-        ">{{numberString}} <button id="delete">X</button></div>
+    ">{{numberString}} ${console.log(this.deletable) ? html`<button id="delete">X</button></div>` : html``}
       `;
     }
 
@@ -33,21 +21,32 @@ class NumberCard extends PolymerElement {
                 type: String,
                 value: 'black'
             },
-            index: Number
+            index: Number,
+            deletable: {
+                type: String,
+                value: "true"
+            }
         }
     }
 
     _numberChange(value) {
-        this.numberString = toMoneyStrig(value)
+        this.numberString = toMoneyString(value);
     }
 
     ready() {
         super.ready();
-        this.shadowRoot.querySelector('#delete').addEventListener('click', ev => {
-            this.dispatchEvent(new CustomEvent('delete', { detail: { index: this.index } }));
-            console.log('delete', this.index, this.number);
-        })
+        if (this.deletable === "true") {
+            console.log(this.deletable);
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X'
+            deleteButton.addEventListener('click', ev => {
+                this.dispatchEvent(new CustomEvent('delete', { detail: { index: this.index } }));
+                console.log('delete', this.index, this.number);
+            });
+            this.shadowRoot.querySelector('div').appendChild(deleteButton);
+        }
     }
 }
+
 
 window.customElements.define('number-card', NumberCard);
