@@ -36,7 +36,6 @@ class NumberCard extends PolymerElement {
     ready() {
         super.ready();
         if (this.deletable === "true") {
-            console.log(this.deletable);
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X'
             deleteButton.addEventListener('click', ev => {
